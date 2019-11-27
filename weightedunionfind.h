@@ -1,5 +1,5 @@
 #ifndef _WEIGHTED_UNION_FIND_H_
-#defind _WEIGHTED_UNION_FIND_H_
+#define _WEIGHTED_UNION_FIND_H_
 
 #include <vector>
 
