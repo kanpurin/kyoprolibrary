@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <iostream>
 
-// LCS 最長共通部分列
 template<typename T>
 int64_t LCS(const std::vector<T> &A, const std::vector<T> &B) {
     int n = (int)A.size(), m = (int)B.size();
