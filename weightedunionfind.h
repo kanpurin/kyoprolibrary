@@ -3,7 +3,6 @@
 
 #include <vector>
 
-// WeightedUnionFind
 template<typename T>
 struct WeightedUnionFind {
 private:
