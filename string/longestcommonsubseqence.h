@@ -5,10 +5,10 @@
 #include <algorithm>
 #include <iostream>
 
-template<typename T>
-int64_t LCS(const std::vector<T> &A, const std::vector<T> &B) {
+template< typename T >
+int64_t LCS(const std::vector< T > &A, const std::vector< T > &B) {
     int n = (int)A.size(), m = (int)B.size();
-    std::vector<std::vector<int64_t>> lcs(n + 1, std::vector<int64_t>(m + 1));
+    std::vector< std::vector< int64_t > > lcs(n + 1, std::vector< int64_t >(m + 1));
     for (int i = 0; i <= n; i++)
     {
         for (int j = 0; j <= m; j++)
