@@ -6,8 +6,8 @@
 #include <algorithm>
 
 // SとS[i:]のLCP長 O(|S|)
-std::vector<int> z_algorithm(const std::string &s) {
-  std::vector<int> prefix(s.size());
+std::vector< int > z_algorithm(const std::string &s) {
+  std::vector< int > prefix(s.size());
   for(int i = 1, j = 0; i < (int)s.size(); i++) {
     if(i + prefix[i - j] < j + prefix[j]) {
       prefix[i] = prefix[i - j];
