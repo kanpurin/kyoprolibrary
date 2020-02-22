@@ -9,15 +9,15 @@
 // RAQ RUQ and RMQ
 // verify : https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F
 // verify : https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_H
-template<typename Monoid>
+template< typename Monoid >
 struct LazySegmentTree {
 private:
-    using Func = std::function<Monoid(Monoid, Monoid)>;
+    using Func = std::function< Monoid(Monoid, Monoid) >;
     Func F = [](Monoid a, Monoid b) { return min(a, b); };
-    Monoid UNITY = std::numeric_limits<Monoid>::max();
+    Monoid UNITY = std::numeric_limits< Monoid >::max();
     int n;
-    std::vector<Monoid> node, lazy;
-    std::vector<int> prop; // 何を伝播させるか 1:add 2:update
+    std::vector< Monoid > node, lazy;
+    std::vector< int > prop; // 何を伝播させるか 1:add 2:update
 
     // propagation
     void eval(int k, int l, int r) {
