@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include "unionfind.h"
 
 // 最小全域木 O(ElogV)?
 struct Edge {
