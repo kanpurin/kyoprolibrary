@@ -11,9 +11,9 @@
 struct SuffixArray {
 private:
     std::vector< int > SA, LCP;
-    std::vector<int> rank;// rank[i]:s[i:]のSAのindex
+    std::vector< int > rank;// rank[i]:s[i:]のSAのindex
     std::string s;
-    SparseTable<int> st;
+    SparseTable< int > st;
 
     // 比較関数 s[si:] < t[ti:]
     bool lt_substr(std::string& t, int si = 0, int ti = 0)
