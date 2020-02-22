@@ -6,13 +6,14 @@
 #include <iostream>
 
 // verify : https://onlinejudge.u-aizu.ac.jp/problems/DSL_2_A
-template<class Monoid> struct SegmentTree {
+template< class Monoid >
+struct SegmentTree {
 private:
-    using Func = std::function<Monoid(Monoid, Monoid)>;
+    using Func = std::function< Monoid(Monoid, Monoid) >;
     Func F;
     Monoid UNITY;
     int n;
-    std::vector<Monoid> node;
+    std::vector< Monoid > node;
 public:
     SegmentTree() {}
 
@@ -28,7 +29,7 @@ public:
         }
     }
 
-    SegmentTree(const std::vector<Monoid>& v, const Func f, const Monoid &unity) {
+    SegmentTree(const std::vector< Monoid >& v, const Func f, const Monoid &unity) {
         F = f;
         UNITY = unity;
         int sz = v.size();
