@@ -2,7 +2,6 @@
 #define _KRUSKAL_H_
 
 #include <vector>
-#include <queue>
 #include <algorithm>
 
 // 最小全域木 O(ElogV)?
