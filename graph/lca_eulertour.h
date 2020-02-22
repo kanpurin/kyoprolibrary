@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include "segmenttree.h"
 
 // 最近共通祖先(EulerTour)
 // verify : https://onlinejudge.u-aizu.ac.jp/problems/GRL_5_C
