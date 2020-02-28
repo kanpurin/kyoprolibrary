@@ -33,7 +33,8 @@ private:
         }
     }
 public:
-    LazySegmentTree(int m, Monoid val = LazySegmentTree::UNITY) {
+    // m 要素 val で埋める
+    LazySegmentTree(int m, Monoid val) {
         n = 1; while (n < m) n <<= 1;
         node.resize(n * 2 - 1, UNITY);
         lazy.resize(n * 2 - 1, 0);
