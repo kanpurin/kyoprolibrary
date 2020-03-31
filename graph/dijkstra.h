@@ -5,9 +5,11 @@
 #include <limits>
 #include <utility>
 #include <queue>
+#include <tuple>
 
 // dijkstra O(ElogV)
 // verify : https://onlinejudge.u-aizu.ac.jp/problems/GRL_1_A
+// ※拡張ダイクストラ
 template<typename T>
 struct Dijkstra {
 private:
@@ -19,7 +21,7 @@ public:
 
     // s から i の最小コスト
     // 経路がない場合は inf
-    std::vector< T > d;
+    std::vector< T > d; // (頂点) ※
 
     Dijkstra(int V) : V(V){
         G.resize(V);
@@ -33,22 +35,22 @@ public:
     }
 
     void build(int s) {
-        d.assign(V, inf);
-        typedef std::pair< T, int > P; //(cost,v)
+        d.assign(V, inf); // ※
+        typedef std::tuple< T, int > P; // (距離,頂点) ※
         std::priority_queue< P, std::vector< P >, std::greater< P > > pq;
-        d[s] = 0;
-        pq.push(P(d[s], s));
-
+        d[s] = 0; // ※
+        pq.push(P(d[s], s)); // ※
         while (!pq.empty()) {
             P p = pq.top(); pq.pop();
-            int v = p.second;
-            if (d[v] < p.first) continue;
+            int v = std::get<1>(p);
+            // ※
+            if (d[v] < std::get<0>(p)) continue; // ※
             for (const edge &e : G[v])
             {
-                // 最小値が更新されるとき push
+                // ※
                 if (d[e.to] > d[v] + e.cost) {
                     d[e.to] = d[v] + e.cost;
-                    pq.push({d[e.to], e.to});
+                    pq.push(P(d[e.to], e.to));
                 }
             }
         }
