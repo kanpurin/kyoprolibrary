@@ -145,7 +145,7 @@ public:
 
     // s[a:]とs[b:]のLCP
     int get_lcp(int a, int b) {
-        if (a == b) return s.substr(a).size();
+        if (a == b) return (int)s.size() - a;
         return st.rmq(std::min(rank[a], rank[b]) + 1, std::max(rank[a], rank[b]) + 1);
     }
 };
