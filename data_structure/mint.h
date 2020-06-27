@@ -4,36 +4,37 @@
 #include <iostream>
 #include <string>
 
-template<long long mod>
+constexpr int MOD = 1e9 + 7;
+
 struct mint {
 private:
     long long x;
 public:
-    mint(long long x = 0) :x((mod+x)%mod) {}
+    mint(long long x = 0) :x((MOD+x)%MOD) {}
     mint(std::string &s) {
         long long z = 0;
         for (int i = 0; i < s.size(); i++) {
             z *= 10;
             z += s[i] - '0';
-            z %= mod;
+            z %= MOD;
         }
         this->x = z;
     }
     mint& operator+=(const mint &a) {
-        if ((x += a.x) >= mod) x -= mod;
+        if ((x += a.x) >= MOD) x -= MOD;
         return *this;
     }
     mint& operator-=(const mint &a) {
-        if ((x += mod - a.x) >= mod) x -= mod;
+        if ((x += MOD - a.x) >= MOD) x -= MOD;
         return *this;
     }
     mint& operator*=(const mint &a) {
-        (x *= a.x) %= mod;
+        (x *= a.x) %= MOD;
         return *this;
     }
     mint& operator/=(const mint &a) {
-        long long n = mod - 2;
-        mint<mod> u = 1, b = a;
+        long long n = MOD - 2;
+        mint u = 1, b = a;
         while (n > 0) {
             if (n & 1) {
                 u *= b;
