@@ -1,5 +1,5 @@
-#ifndef _ALL_TREE_DP_H_
-#define _ALL_TREE_DP_H_
+#ifndef _REROOTING_H_
+#define _REROOTING_H_
 
 #include <vector>
 #include <algorithm>
