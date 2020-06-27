@@ -61,6 +61,10 @@ public:
     // [a,b)
     Monoid get_query(int a, int b) {
         Monoid L = UNITY, R = UNITY;
+        if (a < 0) a = 0;
+        if (b < 0) return UNITY;
+        if (a >= n) return UNITY;
+        if (b >= n) b = n;
         for (a += n, b += n; a < b; a >>= 1, b >>= 1) {
             if (a & 1) L = F(L, node[a++ - 1]);
             if (b & 1) R = F(node[--b - 1], R);
