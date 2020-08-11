@@ -4,40 +4,53 @@
 #include <vector>
 #include <limits>
 
-// bellman-ford法
-struct edge { int to, cost; };
-
-// sからののコスト
+// BellmanFord O(VE)
 // いくらでも小さくできるものはd[] = -LLINF
-void bellman_ford(int s, const std::vector< std::vector< edge > > &G, std::vector< long long > &d) {
-    const int V = G.size();
-    const long long LLINF = 9223372036854775807;
-    d = std::vector< long long >(V, LLINF);
-    d[s] = 0;
-    bool update = true;
-    int i = 0;
-    while (update)
-    {
-        update = false;
-        for (int j = 0; j < V; j++)
-        {
-            for (const edge &e : G[j])
-            {
-                if (d[j] != -LLINF && d[j] != LLINF && d[j] + e.cost < d[e.to]) {
-                    d[e.to] = d[j] + e.cost;
-                    if (i == V - 1) {
-                        d[e.to] = -LLINF;
+struct BellmanFord {
+private:
+    struct edge {
+        int to;
+        long long cost;
+        edge(int to, long long cost) : to(to), cost(cost) {}
+    };
+    int N;
+    std::vector< std::vector< edge > > G;
+
+public:
+    std::vector<long long> d;
+    long long inf = 1e18 + 1;
+    BellmanFord(int n) {
+        N = n;
+        G.resize(N);
+    }
+    void add_edge(int from, int to, long long cost, bool directed = false) {
+        G[from].push_back(edge(to, cost));
+        if (!directed) G[to].push_back(edge(from, cost));
+    }
+    void build(int s) {
+        d = std::vector< long long >(N, inf);
+        d[s] = 0;
+        bool update = true;
+        int i = 0;
+        while (update) {
+            update = false;
+            for (int j = 0; j < N; j++) {
+                for (const edge& e : G[j]) {
+                    if (d[j] != -inf && d[j] != inf && d[j] + e.cost < d[e.to]) {
+                        d[e.to] = d[j] + e.cost;
+                        if (i == N - 1) {
+                            d[e.to] = -inf;
+                        }
+                        update = true;
+                    } else if (d[j] == -inf && d[e.to] != -inf) {
+                        d[e.to] = -inf;
+                        update = true;
                     }
-                    update = true;
-                }
-                else if (d[j] == -LLINF && d[e.to] != -LLINF) {
-                    d[e.to] = -LLINF;
-                    update = true;
                 }
             }
+            if (i < N - 1) i++;
         }
-        if (i < V - 1) i++;
     }
-}
+};
 
 #endif
