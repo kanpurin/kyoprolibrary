@@ -8,7 +8,6 @@
 struct Combination {
 private:
     int N;
-    std::vector< mint > FACT, IFACT;
 
     // pow
     mint pow(mint k, long long n) {
@@ -24,6 +23,7 @@ private:
     }
 
 public:
+    std::vector< mint > FACT, IFACT;
     // nCk
     Combination(int n) : N(n) {
         FACT.resize(n + 1);
