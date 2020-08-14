@@ -7,9 +7,8 @@
 constexpr int MOD = 1e9 + 7;
 
 struct mint {
-private:
-    long long x;
 public:
+    long long x;
     mint(long long x = 0) :x((MOD+x)%MOD) {}
     mint(std::string &s) {
         long long z = 0;
