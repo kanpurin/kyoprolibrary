@@ -9,19 +9,6 @@ struct Combination {
 private:
     int N;
 
-    // pow
-    mint pow(mint k, long long n) {
-        mint res = 1;
-        while (n > 0) {
-            if (n & 1) {
-                res *= k;
-            }
-            k *= k;
-            n >>= 1;
-        }
-        return res;
-    }
-
 public:
     std::vector< mint > FACT, IFACT;
     // nCk
@@ -32,7 +19,7 @@ public:
         IFACT[0] = 1;
         for (int i = 1; i <= n; i++) {
             FACT[i] = FACT[i - 1] * i;
-            IFACT[i] = pow(FACT[i], MOD - 2);
+            IFACT[i] = mint(1) / FACT[i];
         }
     }
 
