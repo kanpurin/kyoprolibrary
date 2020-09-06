@@ -9,15 +9,15 @@
 // RAQ RUQ and RMQ
 // verify : https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_F
 // verify : https://onlinejudge.u-aizu.ac.jp/courses/library/3/DSL/2/DSL_2_H
-template< typename Monoid >
+template<typename Monoid>
 struct LazySegmentTree {
 private:
-    using Func = std::function< Monoid(Monoid, Monoid) >;
+    using Func = std::function<Monoid(Monoid, Monoid)>;
     Func F = [](Monoid a, Monoid b) { return min(a, b); };
-    Monoid UNITY = std::numeric_limits< Monoid >::max();
+    Monoid UNITY = std::numeric_limits<Monoid>::max();
     int n;
-    std::vector< Monoid > node, lazy;
-    std::vector< int > prop; // 何を伝播させるか 1:add 2:update
+    std::vector<Monoid> node, lazy;
+    std::vector<int> prop; // 何を伝播させるか 1:add 2:update
 
     // propagation
     void eval(int k, int l, int r) {
@@ -26,14 +26,14 @@ private:
             if (r - l > 1) {
                 lazy[2 * k + 1] = lazy[k] + (prop[k] == 1 ? lazy[2 * k + 1] : 0);
                 lazy[2 * k + 2] = lazy[k] + (prop[k] == 1 ? lazy[2 * k + 2] : 0);
-                prop[2 * k + 1] = prop[2 * k + 2] = prop[k];
+                if (prop[2 * k + 1] != 2) prop[2 * k + 1] = prop[k];
+                if (prop[2 * k + 2] != 2) prop[2 * k + 2] = prop[k];
             }
             lazy[k] = 0;
             prop[k] = 0;
         }
     }
 public:
-    // m 要素 val で埋める
     LazySegmentTree(int m, Monoid val) {
         n = 1; while (n < m) n <<= 1;
         node.resize(n * 2 - 1, UNITY);
