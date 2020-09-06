@@ -1,3 +1,6 @@
+#ifndef _FORMAL_POWER_SERIES_H_
+#define _FORMAL_POWER_SERIES_H_
+
 #include <iostream>
 #include <functional>
 #include <vector>
@@ -337,3 +340,5 @@ public:
 int main() {
     return 0;
 }
+
+#endif
