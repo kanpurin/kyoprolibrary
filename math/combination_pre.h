@@ -5,12 +5,13 @@
 #include "mint"
 
 // comb (前計算O(NlogMOD) クエリO(1))
+template<typename T >
 struct Combination {
 private:
     int N;
 
 public:
-    std::vector< mint > FACT, IFACT;
+    std::vector< T > FACT, IFACT;
     // nCk
     Combination(int n) : N(n) {
         FACT.resize(n + 1);
@@ -19,7 +20,7 @@ public:
         IFACT[0] = 1;
         for (int i = 1; i <= n; i++) {
             FACT[i] = FACT[i - 1] * i;
-            IFACT[i] = mint(1) / FACT[i];
+            IFACT[i] = T(1) / FACT[i];
         }
     }
 
