@@ -4,12 +4,11 @@
 #include <iostream>
 #include <string>
 
-constexpr int MOD = 1e9 + 7;
-
+template< int MOD >
 struct mint {
 public:
     long long x;
-    mint(long long x = 0) :x((MOD+x)%MOD) {}
+    mint(long long x = 0) :x((x%MOD+MOD)%MOD) {}
     mint(std::string &s) {
         long long z = 0;
         for (int i = 0; i < s.size(); i++) {
@@ -47,6 +46,7 @@ public:
         mint res(*this);
         return res += a;
     }
+    mint operator-() const {return mint() -= *this; }
     mint operator-(const mint &a) const {
         mint res(*this);
         return res -= a;
@@ -61,6 +61,12 @@ public:
     }
     friend std::ostream& operator<<(std::ostream &os, const mint &n) {
         return os << n.x;
+    }
+    friend std::istream &operator>>(std::istream &is, mint &n) {
+        long long x;
+        is >> x;
+        n = mint(x);
+        return is;
     }
     bool operator==(const mint &a) const {
         return this->x == a.x;
