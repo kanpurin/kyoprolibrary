@@ -24,7 +24,7 @@ public:
         n = 1; while (n < m) n <<= 1;
         node.resize(n * 2 - 1, UNITY);
         if (val != UNITY) {
-            for (int i = 0; i < m; i++) node[i] = val;
+            for (int i = 0; i < m; i++) node[i + n - 1] = val;
             build();
         }
     }
