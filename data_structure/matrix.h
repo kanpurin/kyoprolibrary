@@ -77,6 +77,20 @@ struct Matrix {
     Matrix operator*(const Matrix &B) const {
         return (Matrix(*this) *= B);
     }
+    
+    bool operator==(const Matrix &B) const {
+        assert(this->A.size() == B.A.size() && this->A[0].size() == B.A[0].size());
+        int n = this->A.size();
+        int m = this->A[0].size();
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                if (this->A[i][j] != B.A[i][j]) return false;
+        return true;
+    }
+
+    bool operator!=(const Matrix &B) const {
+        return !(*this == B);
+    }
 
     friend std::ostream &operator<<(std::ostream &os, Matrix &p) {
         size_t n = p.height(), m = p.width();
