@@ -24,7 +24,7 @@ public:
         }
     }
 
-    mint comb(int n, int r) {
+    T comb(int n, int r) {
         if (n < 0 || r < 0 || r > n) return 0;
         if (r > n / 2) r = n - r;
         return FACT[n] * IFACT[n - r] * IFACT[r];
