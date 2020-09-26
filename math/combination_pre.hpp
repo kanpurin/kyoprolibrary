@@ -1,8 +1,8 @@
-#ifndef _COMBINATION_PRE_H_
-#define _COMBINATION_PRE_H_
+#ifndef _COMBINATION_PRE_HPP_
+#define _COMBINATION_PRE_HPP_
 
 #include <vector>
-#include "mint"
+#include "../data_structure/mint.hpp"
 
 // comb (前計算O(NlogMOD) クエリO(1))
 template<typename T >
@@ -20,7 +20,10 @@ public:
         IFACT[0] = 1;
         for (int i = 1; i <= n; i++) {
             FACT[i] = FACT[i - 1] * i;
-            IFACT[i] = T(1) / FACT[i];
+        }
+        IFACT[n] = T(1) / FACT[n];
+        for (int i = n-1; i >= 0; i--) {
+            IFACT[i] = IFACT[i+1] * (i+1);
         }
     }
 

@@ -1,5 +1,5 @@
-#ifndef _MOD_INT_H_
-#define _MOD_INT_H_
+#ifndef _MOD_INT_HPP_
+#define _MOD_INT_HPP_
 
 #include <iostream>
 #include <string>
