@@ -23,7 +23,7 @@ public:
 
     // 素因数分解 素因数が降順に並ぶ
     std::vector<int> prime_factorization(int n) {
-        assert(1 <= n && n < v.size());
+        assert(1 <= n && n < (int)v.size());
         std::vector<int> ret;
         while(n > 1) ret.push_back(v[n]), n /= v[n];
         return ret;
