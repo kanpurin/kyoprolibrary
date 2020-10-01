@@ -25,7 +25,7 @@ struct BinaryIndexedTree {
 
     // [left,right)
     inline T sum(int left, int right) const {
-        return sum(right-1) - sum(left - 1);
+        return sum(right) - sum(left);
     }
 
     // k番目にxを加算
