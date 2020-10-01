@@ -51,7 +51,7 @@ struct BinaryIndexedTree {
     friend std::ostream& operator<<(std::ostream &os, const BinaryIndexedTree &bit) {
         os << "[ ";
         for (int i = 0; i < (int)bit.data.size() - 1; i++) {
-            os << bit.sum(i, i);
+            os << bit.sum(i, i + 1);
             if (i < (int)bit.data.size() - 2) os << ", ";
         }
         os << " ]";
