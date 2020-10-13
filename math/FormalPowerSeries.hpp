@@ -102,8 +102,9 @@ public:
         this->a.resize(sz, 0);
     }
     
-    P pre(int sz) const {
-        return pre(*this,sz);
+    // sizeとkの小さい方のサイズにresize
+    P resize(int k) const {
+        return pre(*this,k);
     }
 
     size_t size() const { return this->a.size(); }
