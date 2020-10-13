@@ -6,7 +6,7 @@
 #include <vector>
 #include <cassert>
 #include <algorithm>
-#include "../data_structure/mint.h"
+#include "../data_structure/mint.hpp"
 
 // 形式的冪級数
 // any:任意modで計算するか
@@ -92,12 +92,16 @@ private:
     }
 
 public:
+    std::vector<mint<MOD>> a;
+
+    FormalPowerSeries(std::initializer_list<mint<MOD>> v) {
+        this->a = v;
+    }
+
     FormalPowerSeries(int sz = 0) {
         this->a.resize(sz, 0);
     }
     
-    std::vector<mint<MOD>> a;
-
     P pre(int sz) const {
         return pre(*this,sz);
     }
