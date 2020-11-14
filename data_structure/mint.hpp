@@ -71,6 +71,9 @@ public:
     bool operator==(const mint &a) const {
         return this->x == a.x;
     }
+    bool operator!=(const mint &a) const {
+        return this->x != a.x;
+    }
     mint pow(long long k) const {
         mint ret = 1;
         mint p = this->x;
