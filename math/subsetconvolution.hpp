@@ -1,5 +1,5 @@
-#ifndef _SUBSET_CONVOLUTION_H_
-#define _SUBSET_CONVOLUTION_H_
+#ifndef _SUBSET_CONVOLUTION_HPP_
+#define _SUBSET_CONVOLUTION_HPP_
 
 #include <vector>
 #include <array>
