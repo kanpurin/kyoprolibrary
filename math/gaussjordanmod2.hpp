@@ -1,5 +1,5 @@
-#ifndef _GAUSS_JORDAN_MOD2_H_
-#define _GAUSS_JORDAN_MOD2_H_
+#ifndef _GAUSS_JORDAN_MOD2_HPP_
+#define _GAUSS_JORDAN_MOD2_HPP_
 
 #include <vector>
 #include <bitset>
@@ -7,7 +7,7 @@
 
 constexpr int MOD = 1e9 + 7;
 
-// mod2掃き出し法 O(N^3) 
+// mod2掃き出し法 N×M行列 O(NM^2)
 // 拡大係数行列ならtrue
 // 行列のランクを返す
 const int bitsize = 30;
