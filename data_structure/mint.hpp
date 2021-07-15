@@ -3,88 +3,84 @@
 
 #include <iostream>
 #include <string>
+#include <cassert>
 
 template< int MOD >
 struct mint {
 public:
-    long long x;
-    mint(long long x = 0) :x((x%MOD+MOD)%MOD) {}
+    unsigned int x;
+    mint() : x(0) {}
+    mint(long long v) {
+        long long w = (long long)(v % (long long)(MOD));
+        if (w < 0) w += MOD;
+        x = (unsigned int)(w);
+    }
     mint(std::string &s) {
-        long long z = 0;
+        unsigned int z = 0;
         for (int i = 0; i < s.size(); i++) {
             z *= 10;
             z += s[i] - '0';
             z %= MOD;
         }
-        this->x = z;
+        x = z;
     }
+    mint operator+() const { return *this; }
+    mint operator-() const { return mint() - *this; }
     mint& operator+=(const mint &a) {
         if ((x += a.x) >= MOD) x -= MOD;
         return *this;
     }
     mint& operator-=(const mint &a) {
-        if ((x += MOD - a.x) >= MOD) x -= MOD;
+        if ((x -= a.x) >= MOD) x += MOD;
         return *this;
     }
     mint& operator*=(const mint &a) {
-        (x *= a.x) %= MOD;
+        unsigned long long z = x;
+        z *= a.x;
+        x = (unsigned int)(z % MOD);
         return *this;
     }
-    mint& operator/=(const mint &a) {
-        long long n = MOD - 2;
-        mint u = 1, b = a;
-        while (n > 0) {
-            if (n & 1) {
-                u *= b;
-            }
-            b *= b;
-            n >>= 1;
-        }
-        return *this *= u;
+    mint& operator/=(const mint &a) {return *this = *this * a.inv(); }
+    friend mint operator+(const mint& lhs, const mint& rhs) {
+        return mint(lhs) += rhs;
     }
-    mint operator+(const mint &a) const {
-        mint res(*this);
-        return res += a;
+    friend mint operator-(const mint& lhs, const mint& rhs) {
+        return mint(lhs) -= rhs;
     }
-    mint operator-() const {return mint() -= *this; }
-    mint operator-(const mint &a) const {
-        mint res(*this);
-        return res -= a;
+    friend mint operator*(const mint& lhs, const mint& rhs) {
+        return mint(lhs) *= rhs;
     }
-    mint operator*(const mint &a) const {
-        mint res(*this);
-        return res *= a;
+    friend mint operator/(const mint& lhs, const mint& rhs) {
+        return mint(lhs) /= rhs;
     }
-    mint operator/(const mint &a) const {
-        mint res(*this);
-        return res /= a;
+    friend bool operator==(const mint& lhs, const mint& rhs) {
+        return lhs.x == rhs.x;
+    }
+    friend bool operator!=(const mint& lhs, const mint& rhs) {
+        return lhs.x != rhs.x;
     }
     friend std::ostream& operator<<(std::ostream &os, const mint &n) {
         return os << n.x;
     }
     friend std::istream &operator>>(std::istream &is, mint &n) {
-        long long x;
+        unsigned int x;
         is >> x;
         n = mint(x);
         return is;
     }
-    bool operator==(const mint &a) const {
-        return this->x == a.x;
+    mint inv() const {
+        assert(x);
+        return pow(MOD-2);
     }
-    bool operator!=(const mint &a) const {
-        return this->x != a.x;
-    }
-    mint pow(long long k) const {
-        mint ret = 1;
-        mint p = this->x;
-        while (k > 0) {
-            if (k & 1) {
-                ret *= p;
-            }
+    mint pow(long long n) const {        
+        assert(0 <= n);
+        mint p = *this, r = 1;
+        while (n) {
+            if (n & 1) r *= p;
             p *= p;
-            k >>= 1;
+            n >>= 1;
         }
-        return ret;
+        return r;
     }
 };
 
