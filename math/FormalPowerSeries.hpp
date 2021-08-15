@@ -8,8 +8,8 @@
 #include <algorithm>
 #include "../data_structure/mint.hpp"
 
-// Œ`®“I™p‹‰”
-// any:”CˆÓmod‚ÅŒvZ‚·‚é‚©
+// å½¢å¼çš„å†ªç´šæ•°
+// any:ä»»æ„modã§è¨ˆç®—ã™ã‚‹ã‹
 // verify:https://judge.yosupo.jp/
 template < const int MOD , bool any = false>
 struct FormalPowerSeries {
@@ -185,7 +185,7 @@ public:
         return FPS(std::vector<mint<MOD>>(this->a.begin(),this->a.begin()+std::min(std::max(s,1),this->size())));
     }
 
-    // f(x)^-1 ’è”€‚Í0‚Å‚È‚¢
+    // f(x)^-1 å®šæ•°é …ã¯0ã§ãªã„
     FPS inverse(int deg = -1) const {
         int n = this->size();
         assert(n != 0 && this->a[0].x != 0);
@@ -265,7 +265,7 @@ public:
     }
     FPS differential() const { return FPS(*this).differential_inplace(); }
 
-    // çf(x)dx
+    // âˆ«f(x)dx
     FPS& integral_inplace() {
         const int n = (int)this->a.size();
         assert(n > 0);
@@ -277,7 +277,7 @@ public:
     }
     FPS integral() const { return FPS(*this).integ_inplace(); }
 
-    // log(f(x)) ’è”€‚Í1‚Å‚ ‚é
+    // log(f(x)) å®šæ•°é …ã¯1ã§ã‚ã‚‹
     FPS& log_inplace(int deg = -1) {
         int n = this->size();
         assert(n > 0 && this->a[0] == 1);
@@ -292,7 +292,7 @@ public:
     }  
     FPS log(const int deg = -1) const { return FPS(*this).log_inplace(deg); }
 
-    // exp(f(x)) ’è”€‚Í0‚Å‚ ‚é
+    // exp(f(x)) å®šæ•°é …ã¯0ã§ã‚ã‚‹
     FPS& exp_inplace(int deg = -1) {
         if (!any) {
             int n = this->size();
