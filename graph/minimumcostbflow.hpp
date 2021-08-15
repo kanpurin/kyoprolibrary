@@ -4,7 +4,7 @@
 #include <vector>
 #include <cassert>
 
-#include "minimuncostflow.hpp"
+#include "minimumcostflow.hpp"
 
 // b-flow
 // source,sinkの需給設定に注意
