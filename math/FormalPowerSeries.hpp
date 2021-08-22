@@ -120,6 +120,26 @@ private:
         }
     }
 
+    struct Fact {
+    private:
+        int N;
+    public:
+        std::vector< mint< MOD > > FACT, IFACT;
+        // nCk
+        Fact(int n) : N(n) {
+            FACT.resize(n + 1);
+            IFACT.resize(n + 1);
+            FACT[0] = 1;
+            for (int i = 1; i <= n; i++) {
+                FACT[i] = FACT[i - 1] * i;
+            }
+            IFACT[n] = FACT[n].inv();
+            for (int i = n-1; i >= 0; i--) {
+                IFACT[i] = IFACT[i+1] * (i+1);
+            }
+        }
+    };
+
 public:
     std::vector<mint<MOD>> a;
 
@@ -385,6 +405,23 @@ public:
         return *this;
     }
     FPS pow(const long long k, const int deg = -1) const { return FPS(*this).pow_inplace(k, deg); }
+
+    // f(x+c)
+    FPS& shift_inplace(const mint<MOD> &c) {
+        int n = this->size();
+        Fact fc(n);
+        for (int i = 0; i < n; i++) this->a[i] *= fc.FACT[i];
+        reverse(this->a.begin(), this->a.end());
+        FPS g(n);
+        mint<MOD> cp = 1; 
+        for (int i = 0; i < n; i++) g[i] = cp * fc.IFACT[i], cp *= c;
+        this->convolution_inplace(g);
+        this->a.resize(n);
+        reverse(this->a.begin(), this->a.end());
+        for (int i = 0; i < n; i++) this->a[i] *= fc.IFACT[i];
+        return *this;
+    }
+    FPS shift(const mint<MOD> &c) const { return FPS(*this).shift_inplace(c); }
 
     mint<MOD> &operator[](int x) {
         assert(0 <= x && x < (int)this->a.size());
