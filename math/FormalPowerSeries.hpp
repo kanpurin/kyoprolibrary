@@ -140,6 +140,26 @@ private:
         }
     };
 
+    FPS rev() const {
+        FPS ret(*this);
+        reverse(ret.a.begin(), ret.a.end());
+        return ret;
+    }
+
+    void shrink() {
+        while (this->a.size() && this->a.back() == 0) this->a.pop_back();
+    }
+
+    static std::vector<FPS> subproduct_tree(const std::vector<mint<MOD>> &xs) {
+        int n = (int) xs.size();
+        int k = 1;
+        while(k < n) k <<= 1;
+        std::vector<FPS> g(2 * k, {1});
+        for(int i = 0; i < n; i++) g[k + i] = {-xs[i], 1};
+        for(int i = k; i-- > 1;) g[i] = g[i << 1] * g[i << 1 | 1];
+        return g;
+    }
+
 public:
     std::vector<mint<MOD>> a;
 
@@ -163,14 +183,16 @@ public:
         this->a.resize(sz,m);
     }
 
-    FPS operator+(const long long a) const { return FPS(*this) += a; }
+    FPS operator+(const mint<MOD> a) const { return FPS(*this) += a; }
     FPS operator+(const FPS &a) const { return FPS(*this) += a; }
-    FPS operator-(const long long a) const { return FPS(*this) -= a; }
+    FPS operator-(const mint<MOD> a) const { return FPS(*this) -= a; }
     FPS operator-(const FPS &a) const { return FPS(*this) -= a; }
+    FPS operator*(const mint<MOD> a) const { return FPS(*this) *= a; }
     FPS operator*(const long long a) const { return FPS(*this) *= a; }
     FPS operator*(const FPS &a) const { return FPS(*this) *= a; }
     FPS operator/(const FPS &a) const { return FPS(*this) /= a; }
-    FPS &operator+=(const long long v) {
+    FPS operator%(const FPS &a) const { return FPS(*this) %= a; }
+    FPS &operator+=(const mint<MOD> &v) {
         this->a[0] += v;
         return *this;
     }
@@ -179,13 +201,17 @@ public:
         for(int i = 0; i < (int)r.size(); i++) this->a[i] += r.a[i];
         return *this;
     }
-    FPS &operator-=(const long long v) {
+    FPS &operator-=(const mint<MOD> &v) {
         this->a[0] -= v;
         return *this;
     }
     FPS &operator-=(const FPS &r) {
         this->resize(max((int)this->size(),r.size()));
         for(int i = 0; i < (int)r.size(); i++) this->a[i] -= r.a[i];
+        return *this;
+    }
+    FPS &operator*=(const mint<MOD> &v) {
+        for (int i = 0; i < this->size(); i++) this->a[i] *= v;
         return *this;
     }
     FPS &operator*=(const long long v) {
@@ -197,9 +223,64 @@ public:
         return *this;
     }
     FPS &operator/=(const FPS &r) {
-        this->convolution_inplace(r.inverse());
+        if (this->size() < r.size()) {
+            this->a.clear();
+            return *this;
+        }
+        int n = this->size() - r.size() + 1;
+        if ((int)r.size() <= 64) {
+            FPS f(*this), g(r);
+            g.shrink();
+            mint<MOD> coeff = g.a.back().inv();
+            for (auto &x : g.a) x *= coeff;
+            int deg = (int)f.size() - (int)g.size() + 1;
+            int gs = g.size();
+            FPS quo(deg);
+            for (int i = deg - 1; i >= 0; i--) {
+                quo[i] = f[i + gs - 1];
+                for (int j = 0; j < gs; j++) f[i + j] -= quo[i] * g[j];
+            }
+            *this = quo * coeff;
+            this->resize(n, 0);
+            return *this;
+        }
+        return *this = ((*this).rev().low(n) * r.rev().inverse(n)).low(n).rev();
+    }
+
+    FPS &operator %= (const FPS &Q) {
+        if(Q.size() > this->size()) return *this;
+        if(Q.size() < 32) {
+            int dQ = Q.size()-1;
+            while(dQ && Q.a[dQ] == 0) dQ--;
+            assert(Q.a[dQ] != 0);
+            for(int i = this->size()-1; i >= dQ; i--){
+                if(this->a[i] == 0) continue;
+                mint<MOD> x = this->a[i] / Q.a[dQ];
+                this->a[i] = 0;
+                for(int j = 1; j <= dQ; j++){
+                    this->a[i - j] -= x * Q.a[dQ - j];
+                }
+            }
+            shrink();
+            return *this;
+        }
+        FPS P = (*this) / Q;
+        P *= Q;
+        int dR = -1;
+        for(int i = 0; i < Q.size()-1; i++){
+            P.a[i] = this->a[i] - P.a[i];
+            if(P.a[i] != 0) dR = i;
+        }
+        this->a.resize(dR + 1);
+        for(int i = 0; i <= dR; i++) this->a[i] = P.a[i];
         return *this;
     }
+
+    // FPS &operator%=(const FPS &r) {
+    //     *this -= *this / r * r;
+    //     shrink();
+    //     return *this;
+    // }
 
     FPS low(int s) const {
         return FPS(std::vector<mint<MOD>>(this->a.begin(),this->a.begin()+std::min(std::max(s,1),this->size())));
@@ -422,6 +503,22 @@ public:
         return *this;
     }
     FPS shift(const mint<MOD> &c) const { return FPS(*this).shift_inplace(c); }
+    
+    // O(NlogN+Mlog^2M)
+    std::vector<mint<MOD>> multipoint_evaluation(const std::vector<mint<MOD>> &xs) {
+        auto g = subproduct_tree(xs);
+        int m = (int) xs.size(), k = (int) g.size() / 2;
+        g[1] = (*this) % g[1];
+        for(int i = 2; i < k + m; i++) g[i] = g[i >> 1] % g[i];
+        std::vector<mint<MOD>> ys(m);
+        for(int i = 0; i < m; i++) {
+            ys[i] = (g[k + i].size() == 0 ? mint<MOD>(0) : g[k + i][0]);
+        }
+        return ys;
+    }
+    std::vector<mint<MOD>> multipoint_evaluation(const FPS &xs) {
+        return multipoint_evaluation(xs.a);
+    }
 
     mint<MOD> &operator[](int x) {
         assert(0 <= x && x < (int)this->a.size());
