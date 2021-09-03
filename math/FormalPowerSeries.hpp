@@ -160,6 +160,47 @@ private:
         return g;
     }
 
+    
+    FPS _sqrt(int s) const {
+		assert(this->a[0]==1);
+		static const mint<MOD> half=mint<MOD>(1)/2;
+		FPS f({1}),g({1}),z({1});
+		for(int n=1;n<s;n*=2){
+			for (int i = 0; i < n; i++) z[i]*=z[i];
+			z.ntt(true);
+            
+			FPS delta(2*n),gbuf(2*n);
+			for (int i = 0; i<n; i++) delta[n+i] = z[i] - (i<size()?this->a[i]:0) - (n+i<size()?this->a[n+i]:0);
+            copy(g.a.begin(),g.a.end(), gbuf.a.begin());
+			delta.ntt(false);
+			gbuf.ntt(false);
+			for (int i = 0;i < 2*n; i++) delta[i]*=gbuf[i];
+			delta.ntt(true);
+
+			f.resize(2*n);
+            for(int i=n;i<2*n;i++) f[i]=-half*delta[i];
+			
+			if(2*n>=s)break;
+			
+			z=f;
+			z.ntt(false);
+			
+			FPS eps=gbuf;
+			for (int i = 0;i < 2*n;i++) eps[i]*=z[i];
+			eps.ntt(true);
+			
+			for(int i = 0; i < n; i++)eps[i]=0;
+			eps.ntt(false);
+			
+			for(int i = 0; i < 2*n; i++)eps[i]*=gbuf[i];
+			eps.ntt(true);
+			g.resize(2*n);
+			for(int i = n; i < 2*n; i++)g[i]=-eps[i];
+		}
+		f.resize(s);
+		return f;
+	}
+
 public:
     std::vector<mint<MOD>> a;
 
@@ -183,13 +224,14 @@ public:
         this->a.resize(sz,m);
     }
 
-    FPS operator+(const mint<MOD> a) const { return FPS(*this) += a; }
+    FPS operator+(const mint<MOD> &a) const { return FPS(*this) += a; }
     FPS operator+(const FPS &a) const { return FPS(*this) += a; }
-    FPS operator-(const mint<MOD> a) const { return FPS(*this) -= a; }
+    FPS operator-(const mint<MOD> &a) const { return FPS(*this) -= a; }
     FPS operator-(const FPS &a) const { return FPS(*this) -= a; }
-    FPS operator*(const mint<MOD> a) const { return FPS(*this) *= a; }
+    FPS operator*(const mint<MOD> &a) const { return FPS(*this) *= a; }
     FPS operator*(const long long a) const { return FPS(*this) *= a; }
     FPS operator*(const FPS &a) const { return FPS(*this) *= a; }
+	FPS operator/(const mint<MOD> &a) const { return FPS(*this) /= a;}
     FPS operator/(const FPS &a) const { return FPS(*this) /= a; }
     FPS operator%(const FPS &a) const { return FPS(*this) %= a; }
     FPS &operator+=(const mint<MOD> &v) {
@@ -222,6 +264,9 @@ public:
         this->convolution_inplace(r);
         return *this;
     }
+	FPS &operator/=(const mint<MOD> &v){
+		return *this *= v.inv();
+	}
     FPS &operator/=(const FPS &r) {
         if (this->size() < r.size()) {
             this->a.clear();
@@ -247,7 +292,7 @@ public:
         return *this = ((*this).rev().low(n) * r.rev().inverse(n)).low(n).rev();
     }
 
-    FPS &operator %= (const FPS &Q) {
+    FPS &operator%=(const FPS &Q) {
         if(Q.size() > this->size()) return *this;
         if(Q.size() < 32) {
             int dQ = Q.size()-1;
@@ -275,12 +320,6 @@ public:
         for(int i = 0; i <= dR; i++) this->a[i] = P.a[i];
         return *this;
     }
-
-    // FPS &operator%=(const FPS &r) {
-    //     *this -= *this / r * r;
-    //     shrink();
-    //     return *this;
-    // }
 
     FPS low(int s) const {
         return FPS(std::vector<mint<MOD>>(this->a.begin(),this->a.begin()+std::min(std::max(s,1),this->size())));
@@ -311,15 +350,6 @@ public:
             return r.low(deg);
         }
         else {
-            // int n = this->a.size();
-            // static constexpr int mod0 = 998244353, mod1 = 1300234241, mod2 = 1484783617;
-            // FPS ret;
-            // f0 = f0.inverse(deg);
-            // f1 = f1.inverse(deg);
-            // f2 = f2.inverse(deg);
-            // crt(ret,f0,f1,f2);
-            // return ret;
-
             FPS r({this->a[0].inv()});
             for (int i = 1; i < deg; i <<= 1)
                 r = (r*2 - r.square()*(*this).low(i<<1)).low(i<<1);
@@ -486,6 +516,37 @@ public:
         return *this;
     }
     FPS pow(const long long k, const int deg = -1) const { return FPS(*this).pow_inplace(k, deg); }
+
+    // sqrt(f(x))
+    // 存在しないなら長さ0になる
+    FPS& sqrt_inplace(int deg = -1) {
+        if (deg == -1) deg = this->size();
+        int n = this->size(), z = 0;
+        for(;z<n&&this->a[z]==0;z++);
+        if(z==n) {this->resize(deg); return *this;}
+        if(z%2) return *this = {};
+        mint<MOD> w = this->a[z].sqrt();
+        if(w*w!=this->a[z]) return *this = {};
+        int s=deg-z/2;
+        mint<MOD> az = this->a[z];
+        this->a.erase(this->a.begin(),this->a.begin()+z);
+        *this /= az;
+        if (!any) *this = this->_sqrt(s);
+        else {
+            FPS g({1});
+            mint<MOD> two_inv = mint<MOD>(2).inv();
+            for (int i = 1; i < s; i*=2) {
+                g.resize(i*2);
+                g += (*this).low(i*2)*g.inverse();
+                g *= two_inv;
+            }
+            *this = g.low(s);
+        }
+        *this *= w;
+        this->a.insert(this->a.begin(),z/2,0);
+        return *this;
+    }
+    FPS sqrt(int deg = -1) const { return FPS(*this).sqrt_inplace(deg); }
 
     // f(x+c)
     FPS& shift_inplace(const mint<MOD> &c) {
