@@ -87,7 +87,7 @@ public:
     int lower_bound(const T k, const T x) const {
         Node *pt=rt;
         int ans = 1;
-        for (int i=bitlen-1; i>=0; i--) {
+        for (int i=bitlen-1; i>=0 && pt; i--) {
             int y = x>>i&1;
             if ((k>>i&1)&&pt->ch[y]) ans += pt->ch[y]->cnt;
             pt=pt->ch[(k>>i&1)^y];
