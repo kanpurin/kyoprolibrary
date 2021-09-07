@@ -38,14 +38,14 @@ public:
     // f(x) += max(x-a,0)
     void add_x_a(T a) {
         if (!L.empty()) minf += max(topL()-a,T(0));
-        if (!L.empty() && topL() <= a) pushR(a);
+        if (L.empty() || topL() <= a) pushR(a);
         else pushL(a), pushR(popL());
     }
 
     // f(x) += max(a-x,0)
     void add_a_x(T a) {
         if (!R.empty()) minf += max(a-topR(),T(0));
-        if (!R.empty() && a <= topR()) pushL(a);
+        if (R.empty() || a <= topR()) pushL(a);
         else pushR(a), pushL(popR());
     }
 
