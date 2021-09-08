@@ -1,5 +1,5 @@
-#ifndef _DYNAMIC_SEGMENT_TREE_H_
-#define _DYNAMIC_SEGMENT_TREE_H_
+#ifndef _DYNAMIC_SEGMENT_TREE_HPP_
+#define _DYNAMIC_SEGMENT_TREE_HPP_
 
 #include <functional>
 #include <vector>
