@@ -1,5 +1,5 @@
-#ifndef _SEGMENT_TREE_H_
-#define _SEGMENT_TREE_H_
+#ifndef _SEGMENT_TREE_HPP_
+#define _SEGMENT_TREE_HPP_
 
 #include <functional>
 #include <vector>
