@@ -18,4 +18,9 @@ inline coord_t cross(const Point &A, const Point &B) {
     return cross(Point(0,0),A,B);
 }
 
+// A×B
+inline coord_t cross(const Vector &A, const Vector &B) {
+    return cross(Point(A.x,A.y),Point(B.x,B.y));
+}
+
 #endif
