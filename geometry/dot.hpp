@@ -18,4 +18,9 @@ inline coord_t dot(const Point &A, const Point &B) {
     return dot(Point(0,0),A,B);
 }
 
+// AとBの内積
+inline coord_t dot(const Vector &A, const Vector &B) {
+    return dot(Point(A.x,A.y),Point(B.x,B.y));
+}
+
 #endif
