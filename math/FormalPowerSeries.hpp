@@ -488,7 +488,7 @@ public:
             if (deg == -1) deg = (int)this->size();
             FPS r({1});
             for (int i = 1; i < deg; i <<= 1) {
-                r = (r*(this->low(i << 1)+1-r.log(i << 1))).low(i << 1);
+                r = (r*(this->low(i << 1)+mint<MOD>(1)-r.log(i << 1))).low(i << 1);
             }
             return *this = r.low(deg);
         }
