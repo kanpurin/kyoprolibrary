@@ -1,5 +1,5 @@
-#ifndef _DINIC_H_
-#define _DINIC_H_
+#ifndef _DINIC_HPP_
+#define _DINIC_HPP_
 
 #include <vector>
 #include <queue>
@@ -56,6 +56,7 @@ private:
     }
 public:
 
+    Dinic() {}
     Dinic(int V) : graph(V) {}
 
     // from から to への容量capの有向辺
