@@ -6,7 +6,8 @@
 #include <iostream>
 #include <algorithm>
 
-// 最大流O(V^2E)
+// 最大流O(V^2E) 実際もっと早い
+// 容量全部同じO(E√E)
 struct Dinic {
 private:
     struct edge {
@@ -20,7 +21,6 @@ private:
     std::vector< std::vector< edge > > graph;
     std::vector< int > min_cost, iter;
 
-
     bool bfs(int s, int t) {
         min_cost.assign(graph.size(), -1);
         std::queue< int > que;
@@ -30,29 +30,30 @@ private:
             int p = que.front();
             que.pop();
             for (auto &e : graph[p]) {
-                if (e.cap > 0 && min_cost[e.to] == -1) {
-                    min_cost[e.to] = min_cost[p] + 1;
-                    que.push(e.to);
-                }
+                if (e.cap == 0 || min_cost[e.to] != -1) continue;
+                min_cost[e.to] = min_cost[p] + 1;
+                que.push(e.to);
             }
         }
         return min_cost[t] != -1;
     }
 
-    long long dfs(int idx, const int t, long long flow) {
-        if (idx == t) return flow;
-        for (int &i = iter[idx]; i < (int)graph[idx].size(); i++) {
-            edge &e = graph[idx][i];
-            if (e.cap > 0 && min_cost[idx] < min_cost[e.to]) {
-                long long d = dfs(e.to, t, std::min(flow, e.cap));
-                if (d > 0) {
-                    e.cap -= d;
-                    graph[e.to][e.rev].cap += d;
-                    return d;
-                }
-            }
+    long long dfs(const int s, int v, long long flow) {
+        if (v == s) return flow;
+        long long res = 0;
+        int min_cost_v = min_cost[v];
+        for (int &i = iter[v]; i < (int)graph[v].size(); i++) {
+            edge &e = graph[v][i];
+            if (graph[e.to][e.rev].cap == 0 || min_cost_v <= min_cost[e.to]) continue;
+            long long d = dfs(s, e.to, std::min(flow-res, graph[e.to][e.rev].cap));
+            if (d <= 0) continue;
+            e.cap += d;
+            graph[e.to][e.rev].cap -= d;
+            res += d;
+            if (res == flow) return res;
         }
-        return 0;
+        min_cost[v] = (int)graph.size();
+        return res;
     }
 public:
 
@@ -65,13 +66,14 @@ public:
         graph[to].push_back({from, 0, (int)graph[from].size() - 1, true, idx});
     }
 
-    // from s to t
-    long long max_flow(int s, int t) {
+    long long max_flow(int s, int t, long long flow_limit = 1e18 + 6) {
         long long flow = 0;
         while (bfs(s, t)) {
+            if (min_cost[t] == -1) break;
             iter.assign(graph.size(), 0);
-            long long f = 0;
-            while ((f = dfs(s, t, 1e9 + 6)) > 0) flow += f;
+            long long f = dfs(s, t, flow_limit-flow);
+            if (!f) break;
+            flow += f;
         }
         return flow;
     }
