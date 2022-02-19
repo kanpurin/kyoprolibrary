@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <queue>
+#include <stack>
 #include <iostream>
 #include <algorithm>
 
@@ -76,6 +77,26 @@ public:
             flow += f;
         }
         return flow;
+    }
+
+    // 先にmax_flowが必要
+    // s側カットを出力
+    std::vector< int > min_cnt(int s,int t) {
+        std::vector< bool > visited(graph.size(),false);
+        std::vector< int > ret;
+        std::stack< int > sta;
+        visited[s] = true;
+        sta.push(s); ret.push_back(s);
+        while(!sta.empty()) {
+            int v = sta.top(); sta.pop();
+            for (auto &e : graph[v]) {
+                if (visited[e.to] || e.cap == 0) continue;
+                visited[e.to] = true;
+                sta.push(e.to);
+                ret.push_back(e.to);
+            }
+        }
+        return ret;
     }
 
     void output() {
