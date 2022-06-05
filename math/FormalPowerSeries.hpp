@@ -517,7 +517,8 @@ public:
     }
     FPS pow(const long long k, const int deg = -1) const { return FPS(*this).pow_inplace(k, deg); }
 
-    // f(x)^k O(NK) N:長さ K:項数 定数項は0でない
+    // f(x)^k O(NK) N:長さ K:項数
+    // 定数項は0でない
     FPS pow_sparse(const long long k) {
         assert(this->size() > 0 && this->a[0] != 0);
         FPS g(this->size());
