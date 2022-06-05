@@ -517,6 +517,30 @@ public:
     }
     FPS pow(const long long k, const int deg = -1) const { return FPS(*this).pow_inplace(k, deg); }
 
+    // f(x)^k O(NK) N:長さ K:項数 定数項は0でない
+    FPS pow_sparse(const long long k) {
+        assert(this->size() > 0 && this->a[0] != 0);
+        FPS g(this->size());
+        std::vector<int> fl;
+        mint<MOD> invf0 = this->a[0].inv();
+        std::vector<long long> inv(g.size(),1);
+        g[0] = this->a[0].pow(k);
+        for (int i = 2; i < (int)g.size(); i++) inv[i] = MOD - (MOD / i) * inv[MOD%i] % MOD;
+        for (int i = 0; i < (int)this->size(); i++) {
+            if (this->a[i] == 0) continue;
+            fl.push_back(i);
+        }
+        for (int i = 1; i < (int)g.size(); i++) {
+            for (int j = 0; j < (int)fl.size(); j++) {
+                int p = fl[j];
+                if (1 <= p && p <= i) g[i] += this->a[p]*g[i-p]*p*k;
+                if (1 <= p && p <= i-1) g[i] -= this->a[p]*g[i-p]*(i-p);
+            }
+            g[i] = g[i]*this->a[0]*inv[i];
+        }
+        return g;
+    }
+
     // sqrt(f(x))
     // 存在しないなら長さ0になる
     FPS& sqrt_inplace(int deg = -1) {
