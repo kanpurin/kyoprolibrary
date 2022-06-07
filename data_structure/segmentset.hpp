@@ -6,29 +6,39 @@
 
 struct SegmentSet {
 private:
-    std::map<int,int> mp; // (右端,左端)
+    std::map<int,int> mp; // (l,r)
 public:
     SegmentSet(){}
     auto begin() { return mp.begin(); }
     auto end() { return mp.end(); }
-    // (r,l)を返す
+    // (l,r)を返す.無い場合end()
     auto get(int x) {
-        auto it = mp.lower_bound(x);
-        if (it == mp.end() || x < it->second) return mp.end();
+        auto it = mp.upper_bound(x);
+        if (it == mp.begin() || (--it)->second < x) return mp.end();
         return it;
     }
     // [l,r]を追加
     void insert(int l,int r) {
         assert(l <= r);
-        auto it1 = get(l);
-        if (it1 != mp.end()) l = it1->second;
-        auto it2 = get(r);
-        if (it2 != mp.end()) r = it2->first;
-        for (auto it = mp.lower_bound(l); it != mp.end(); ) {
-            if (r < it->first) break;
-            it = mp.erase(it);
+        auto itl = mp.upper_bound(l), itr = mp.upper_bound(r);
+        if (itl != mp.begin() && (--itl)->second < l) itl++;
+        if (itl != itr) {
+            l = std::min(l , itl->first);
+            r = std::max(r, prev(itr)->second);
+            mp.erase(itl,itr);
         }
-        mp.insert({r,l});
+        mp[l] = r;
+    }
+    // [l,r]を削除
+    void erase(int l, int r) {
+        assert(l <= r);
+        auto itl = mp.upper_bound(l), itr = mp.upper_bound(r);
+        if (itl != mp.begin() && (--itl)->second < l) ++itl;
+        if (itl == itr) return;
+        int tl = std::min(l, itl->first), tr = std::max(r,prev(itr)->second);
+        mp.erase(itl, itr);
+        if (tl < l) mp[tl] = l-1;
+        if (r < tr) mp[r+1] = tr;
     }
 };
 
