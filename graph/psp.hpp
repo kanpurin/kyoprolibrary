@@ -77,6 +77,22 @@ struct ProjectSelectionProblem {
         }
         return ans+G.max_flow(s[n], s[n]+1);
     }
+
+    // 先にmincostが必要
+    // 選択した選択肢
+    std::vector<int> answer() {
+        std::vector<int> ans(n);
+        auto v = G.min_cnt(s[n],s[n]+1);
+        std::vector<bool> scut(s[n]+2);
+        for (int i = 0; i < (int)v.size(); i++) scut[v[i]] = true;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < k[i]-1; j++) {
+                if (!scut[s[i]+j]) { ans[i] = j; break; }
+                else if (j == k[i]-2) { ans[i] = k[i]-1; }
+            }
+        }
+        return ans;
+    }
 };
 
 #endif
