@@ -224,9 +224,12 @@ public:
         this->a.resize(sz,m);
     }
 
+    FPS operator-() const { return FPS({0}) - FPS(*this); }
     FPS operator+(const mint<MOD> &a) const { return FPS(*this) += a; }
+    FPS operator+(const long long a) const { return FPS(*this) += a; }
     FPS operator+(const FPS &a) const { return FPS(*this) += a; }
     FPS operator-(const mint<MOD> &a) const { return FPS(*this) -= a; }
+    FPS operator-(const long long a) const { return FPS(*this) -= a; }
     FPS operator-(const FPS &a) const { return FPS(*this) -= a; }
     FPS operator*(const mint<MOD> &a) const { return FPS(*this) *= a; }
     FPS operator*(const long long a) const { return FPS(*this) *= a; }
@@ -238,12 +241,20 @@ public:
         this->a[0] += v;
         return *this;
     }
+    FPS &operator+=(const long long v) {
+        this->a[0] += v;
+        return *this;
+    }
     FPS &operator+=(const FPS &r) {
         this->resize(max((int)this->size(),r.size()));
         for(int i = 0; i < (int)r.size(); i++) this->a[i] += r.a[i];
         return *this;
     }
     FPS &operator-=(const mint<MOD> &v) {
+        this->a[0] -= v;
+        return *this;
+    }
+    FPS &operator-=(const long long v) {
         this->a[0] -= v;
         return *this;
     }
