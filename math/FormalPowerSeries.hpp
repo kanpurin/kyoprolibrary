@@ -507,12 +507,11 @@ public:
         mint<MOD> pc = this->a[l].pow(k);
         this->a.erase(this->a.begin(), this->a.begin() + l);
         *this *= ic.x;
-        this->log_inplace();
+        this->log_inplace(deg-l*k);
         *this *= k;
-        this->exp_inplace();
+        this->exp_inplace(deg-l*k);
         *this *= pc.x;
         this->a.insert(this->a.begin(), l*k, 0);
-        this->resize(deg);
         return *this;
     }
     FPS pow(const long long k, const int deg = -1) const { return FPS(*this).pow_inplace(k, deg); }
