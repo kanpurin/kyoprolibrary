@@ -16,7 +16,6 @@ private:
         long long cap;
         int rev;
         bool isrev;
-        int idx;
     };
 
     std::vector< std::vector< edge > > graph;
@@ -62,9 +61,9 @@ public:
     Dinic(int V) : graph(V) {}
 
     // from から to への容量capの有向辺
-    void add_edge(int from, int to, long long cap, int idx = -1) {
-        graph[from].push_back({to, cap, (int)graph[to].size(), false, idx});
-        graph[to].push_back({from, 0, (int)graph[from].size() - 1, true, idx});
+    void add_edge(int from, int to, long long cap) {
+        graph[from].push_back({to, cap, (int)graph[to].size(), false});
+        graph[to].push_back({from, 0, (int)graph[from].size() - 1, true});
     }
 
     long long max_flow(int s, int t, long long flow_limit = 1e18 + 6) {
