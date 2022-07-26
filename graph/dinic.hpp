@@ -11,14 +11,14 @@
 // 容量全部同じO(E√E)
 struct Dinic {
 private:
-    struct edge {
+    struct Edge {
         int to;
         long long cap;
         int rev;
         bool isrev;
     };
 
-    std::vector< std::vector< edge > > graph;
+    std::vector< std::vector< Edge > > graph;
     std::vector< int > min_cost, iter;
 
     bool bfs(int s, int t) {
@@ -43,7 +43,7 @@ private:
         long long res = 0;
         int min_cost_v = min_cost[v];
         for (int &i = iter[v]; i < (int)graph[v].size(); i++) {
-            edge &e = graph[v][i];
+            Edge &e = graph[v][i];
             if (graph[e.to][e.rev].cap == 0 || min_cost_v <= min_cost[e.to]) continue;
             long long d = dfs(s, e.to, std::min(flow-res, graph[e.to][e.rev].cap));
             if (d <= 0) continue;
