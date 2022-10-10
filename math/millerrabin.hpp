@@ -2,16 +2,14 @@
 #define _MILLER_RABIN_H_
 
 #include <random>
+#include <vector>
 
-// MillerRabin素数判定法
+// MillerRabin素数判定法 O(logN)
 // verify:https://yukicoder.me/problems/no/774
-bool MillerRabin(long long v, int loop = 10) {
-    long long d = v - 1;
-    int s = 0, i, j;
-    if (v <= 1) return false;
-    if (v == 2) return true;
-    if (v % 2 == 0) return false;
-    while (d % 2 == 0) d /= 2, s++;
+bool MillerRabin(long long N) {
+    if (N <= 1) return false;
+    if (N == 2) return true;
+    if (N % 2 == 0) return false;
 
     auto modpow = [](__int128_t a, long long n, long long mo) {
         __int128_t r = 1;
@@ -20,13 +18,18 @@ bool MillerRabin(long long v, int loop = 10) {
         return r;
     };
 
-    for (i = 0; i < loop; i++) {
-        long long a = abs(1LL * rand() * rand() + rand()) % (v - 2) + 1;
-        long long r = modpow(a, d, v);
-        if (r == 1 || r == v - 1) continue;
+    std::vector<long long> A = {2, 325, 9375, 28178, 450775,
+                           9780504, 1795265022};
+    long long s = 0, d = N - 1;
+    while (d % 2 == 0) d >>= 1, s++;
+
+    for (long long a : A) {
+        if (a % N == 0) return true;
+        long long j, r = modpow(a, d, N);
+        if (r == 1) continue;
         for (j = 0; j < s; j++) {
-            r = modpow(r, 2, v);
-            if (r == v - 1) break;
+            if (r == N - 1) break;
+            r = __int128_t(r) * r % N;
         }
         if (j == s) return false;
     }
@@ -34,7 +37,3 @@ bool MillerRabin(long long v, int loop = 10) {
 }
 
 #endif
-
-int main() {
-    return 0;
-}
