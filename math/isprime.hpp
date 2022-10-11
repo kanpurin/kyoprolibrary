@@ -6,7 +6,7 @@
 
 // MillerRabin素数判定法 O(logN)
 // verify:https://yukicoder.me/problems/no/774
-bool MillerRabin(long long N) {
+bool isprime(long long N) {
     if (N <= 1) return false;
     if (N == 2) return true;
     if (N % 2 == 0) return false;
