@@ -4,21 +4,22 @@
 #include <map>
 #include <cassert>
 
+template<typename T>
 struct SegmentSet {
 private:
-    std::map<int,int> mp; // (l,r)
+    std::map<T,T> mp; // (l,r)
 public:
     SegmentSet(){}
     auto begin() { return mp.begin(); }
     auto end() { return mp.end(); }
-    // (l,r)を返す.無い場合end()
-    auto get(int x) {
+    // x∈[l,r]となる(l,r)を返す.無い場合end()
+    auto get(T x) {
         auto it = mp.upper_bound(x);
         if (it == mp.begin() || (--it)->second < x) return mp.end();
         return it;
     }
     // [l,r]を追加
-    void insert(int l,int r) {
+    void insert(T l,T r) {
         assert(l <= r);
         auto itl = mp.upper_bound(l), itr = mp.upper_bound(r);
         if (itl != mp.begin() && (--itl)->second < l) itl++;
@@ -30,12 +31,12 @@ public:
         mp[l] = r;
     }
     // [l,r]を削除
-    void erase(int l, int r) {
+    void erase(T l, T r) {
         assert(l <= r);
         auto itl = mp.upper_bound(l), itr = mp.upper_bound(r);
         if (itl != mp.begin() && (--itl)->second < l) ++itl;
         if (itl == itr) return;
-        int tl = std::min(l, itl->first), tr = std::max(r,prev(itr)->second);
+        T tl = std::min(l, itl->first), tr = std::max(r,prev(itr)->second);
         mp.erase(itl, itr);
         if (tl < l) mp[tl] = l-1;
         if (r < tr) mp[r+1] = tr;
