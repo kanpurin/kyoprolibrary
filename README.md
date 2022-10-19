@@ -1,3 +1,5 @@
+[![Actions Status](https://github.com/kanpurin/kyoprolibrary/workflows/verify/badge.svg)](https://github.com/kanpurin/kyoprolibrary/actions)
+
 # データ構造
 - BinaryIndexedTree
 - セグメント木
