@@ -41,7 +41,7 @@ public:
         }
     }
     
-    // a[l:r] O(1)
+    // a[l:r) O(1)
     ull get(long long l, long long r) const {
         ull ret = _hashed[r] + _mod - _mul(_hashed[l], _power[r - l]);
         if(ret >= _mod) ret -= _mod;
@@ -65,7 +65,7 @@ public:
         }
     }
     
-    // LCP(a[l1:r1],b[l2:r2]) O(logN)
+    // LCP(a[l1:r1),b[l2:r2])) O(logN)
     long long LCP(const RollingHash &b, long long l1, long long r1, long long l2, long long r2) const {
         long long len = std::min(r1 - l1, r2 - l2);
         long long low = -1, high = len + 1;
