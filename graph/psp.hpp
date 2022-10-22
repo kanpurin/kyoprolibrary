@@ -69,7 +69,7 @@ struct ProjectSelectionProblem {
                 if (cost[i][j] > cost[i][j+1]) {
                     G.add_edge(s[n], s[i]+j, cost[i][j]-cost[i][j+1]);
                 }
-                else {
+                else if (cost[i][j] < cost[i][j+1]) {
                     G.add_edge(s[i]+j, s[n]+1, cost[i][j+1]-cost[i][j]);
                     ans -= cost[i][j+1]-cost[i][j];
                 }
