@@ -513,7 +513,7 @@ public:
         assert(deg >= 0);
         int l = 0;
         while (this->a[l] == 0) ++l;
-        if (l > deg/k) return *this = FPS(deg);
+        if (__int128_t(l)*k > deg) return *this = FPS(deg);
         mint<MOD> ic = this->a[l].inv();
         mint<MOD> pc = this->a[l].pow(k);
         this->a.erase(this->a.begin(), this->a.begin() + l);
@@ -529,26 +529,34 @@ public:
 
     // f(x)^k O(NK) N:長さ K:項数
     // 定数項は0でない
-    FPS pow_sparse(const long long k) {
-        assert(this->size() > 0 && this->a[0] != 0);
-        FPS g(this->size());
+    FPS pow_sparse(long long k) {
+        assert(this->size() > 0);
+        if (k == 0) {
+            FPS g(this->size()); g[0] = 1;
+            return g;
+        }
+        int l = 0;
+        while (l < this->size() && this->a[l] == 0) ++l;
+        if (__int128_t(l)*k > this->size()) return FPS(this->size());
+        FPS g(this->size()-l*k);
         std::vector<int> fl;
-        mint<MOD> invf0 = this->a[0].inv();
+        mint<MOD> invf0 = this->a[l].inv();
         std::vector<long long> inv(g.size(),1);
-        g[0] = this->a[0].pow(k);
+        g[0] = this->a[l].pow(k);
         for (int i = 2; i < (int)g.size(); i++) inv[i] = MOD - (MOD / i) * inv[MOD%i] % MOD;
         for (int i = 0; i < (int)this->size(); i++) {
             if (this->a[i] == 0) continue;
-            fl.push_back(i);
+            fl.push_back(i-l);
         }
         for (int i = 1; i < (int)g.size(); i++) {
             for (int j = 0; j < (int)fl.size(); j++) {
                 int p = fl[j];
-                if (1 <= p && p <= i) g[i] += this->a[p]*g[i-p]*p*k;
-                if (1 <= p && p <= i-1) g[i] -= this->a[p]*g[i-p]*(i-p);
+                if (1 <= p && p <= i) g[i] += this->a[p+l]*g[i-p]*p*k;
+                if (1 <= p && p <= i-1) g[i] -= this->a[p+l]*g[i-p]*(i-p);
             }
-            g[i] = g[i]*this->a[0]*inv[i];
+            g[i] *= invf0*inv[i];
         }
+        g.a.insert(g.a.begin(), l*k, 0);
         return g;
     }
 
