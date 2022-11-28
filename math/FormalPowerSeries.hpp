@@ -368,6 +368,27 @@ public:
         }
     }
 
+    // f(x)^-1 O(NK) N:長さ K:項数 定数項は0でない
+    FPS inverse_sparse() {
+        assert(this->size() > 0 && this->a[0] != 0);
+        FPS g(this->size());
+        mint<MOD> invf0 = this->a[0].inv();
+        std::vector<int> fl;
+        for (int i = 0; i < this->size(); i++) {
+            if (this->a[i] == 0) continue;
+            fl.push_back(i);
+        }
+        g[0] = invf0;
+        for (int i = 1; i < g.size(); i++) {
+            for (int j = 0; j < fl.size(); j++) {
+                int p = fl[j];
+                if (1 <= p && p <= i) g[i] -= this->a[p]*g[i-p];
+            }
+            g[i] *= invf0;
+        }
+        return g;
+    }
+
     // f(x)^2
     FPS& square_inplace() {
         if (this->size() == 0) {
