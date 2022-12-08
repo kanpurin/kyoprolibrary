@@ -4,8 +4,8 @@
 #include <vector>
 #include <iostream>
 
-// ����œ���
-// (+,min),(min,+),(max,min),(AND,OR)�Ȃ�
+// 半環上で動く
+// (+,min),(min,+),(max,min),(AND,OR)など
 template< class T >
 struct Matrix {
     std::vector< std::vector< T > > A;
@@ -61,8 +61,8 @@ struct Matrix {
         assert(p == B.height());
         std::vector< std::vector< T > > C(n, std::vector< T >(m, 0));
         for (int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                for (int k = 0; k < p; k++)
+            for (int k = 0; k < p; k++)
+                for (int j = 0; j < m; j++)
                     C[i][j] = (C[i][j] + (*this)[i][k] * B[k][j]);
         A.swap(C);
         return (*this);
@@ -105,7 +105,7 @@ struct Matrix {
         return (os);
     }
 
-    // 行�?��?
+    // 行列式
     T determinant() {
         Matrix B(*this);
         assert(width() == height());
@@ -135,8 +135,8 @@ struct Matrix {
         return (ret);
     }
 
-    // k�?
-    // �?の数は変更されな�?
+    // k乗
+    // 元の数は変更されない
     Matrix pow(int64_t k) const {
         auto res = I(A.size());
         auto M = *this;
