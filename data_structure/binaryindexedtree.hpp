@@ -16,6 +16,14 @@ struct BinaryIndexedTree {
         data.assign(++sz, 0);
     }
 
+    BinaryIndexedTree(vector< T > vec) {
+        data.assign(vec.size()+1,0);
+        copy(vec.begin(), vec.end(), data.begin()+1);
+        for (int i = 1; i < data.size(); i++) {
+            if (i + (i & -i) < data.size()) data[i + (i & -i)] += data[i];
+        }
+    }
+
     // [0,k)
     inline T sum(int k) const {
         T ret = 0;
