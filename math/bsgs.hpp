@@ -2,30 +2,33 @@
 #define _BABY_STEP_GIANT_STEP_HPP_
 
 #include <functional>
-#include <map>
+#include <unordered_set>
 
 // Baby-step Giant-step
-// f^{t}(s)=g となる最小の非負整数t 位数n 逆関数f^{-1}が存在する
+// https://maspypy.com/モノイド作用に関する離散対数問題
+// f^{t}(s)=g となる最小の非負整数t 位数n
 // fm(x):=f^{m}(x)
-template<typename T, typename KeyType>
-long long bsgs(T s, 
-               T g, 
-               long long n, 
-               long long m, 
-               const std::function<T(T)> &f, 
-               const std::function<T(T)> &fm, 
-               const std::function<KeyType(T)> &mk_key) {
-    std::map<KeyType,int> mp;
+template<typename T>
+long long bsgs(T s, T g, 
+               long long n, long long m, 
+               const std::function<T(T)> &f,
+               const std::function<T(T)> &fm) {
+    std::unordered_set<T> st;
+    T _g = g;
     for (int j = 1; j <= m; j++) {
-        g = f(g);
-        KeyType key = mk_key(g);
-        mp[key] = -j;
+        _g = f(_g);
+        st.insert(_g);
     }
-    for (int i = 1; ; i++) {
+    bool isFirst = true;
+    for (int k = 1; (k-1)*m < n; k++) {
+        T p = s;
         s = fm(s);
-        KeyType key = mk_key(s);
-        if (mp.count(key)) return m*i+mp[key];
-        if (n<=m*i) break;
+        if (st.find(s) == st.end()) continue;
+        for (int j = 0; j < m; j++,p = f(p)) {
+            if (p == g) return (k-1)*m+j;
+        }
+        if (!isFirst) break;
+        isFirst = false;
     }
     return -1;
 }
