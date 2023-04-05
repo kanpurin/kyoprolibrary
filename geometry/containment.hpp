@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "template.hpp"
-#include "dot.hpp"
 #include "cross.hpp"
 
 // O(logN)
