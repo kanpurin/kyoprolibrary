@@ -6,7 +6,6 @@
 #include "template.hpp"
 #include "dot.hpp"
 #include "cross.hpp"
-#include "ccw.hpp"
 
 // O(logN)
 // 0:含まれない 1:辺上にある 2:含まれる
@@ -15,23 +14,15 @@ int containment(const std::vector<Point> &polygon, const Point &point) {
     int n = polygon.size();
     int l = 1, r = n-1;
     Point initpoint = polygon[0];
-    if (cross(initpoint, polygon[l], point) < 0 ||
-        cross(initpoint, point, polygon[r]) < 0) {
-        return 0;
-    }
-    if (ccw(initpoint,polygon[l],point) == 0 || 
-        ccw(initpoint,polygon[r],point) == 0) {
-        return 1;
-    }
+    coord_t b1 = cross(initpoint, polygon[l], point);
+    coord_t b2 = cross(initpoint, point, polygon[r]);
+    if (b1 < 0 || b2 < 0) return 0;
     while(r-l>1) {
         int m = (l+r)/2;
-        if (cross(initpoint, polygon[l], point) >= 0 &&
-            cross(initpoint, point, polygon[m]) >= 0)
-            r = m;
-        else
-            l = m;
+        (cross(initpoint, point, polygon[m]) >= 0 ? r : l) = m;
     }
-    return ccw(polygon[l],polygon[r],point) + 1;
+    coord_t v = cross(point, polygon[l], polygon[r]);
+    return v == 0 ? 1 : v > 0 ? (b1 == 0 || b2 == 0 ? 1 : 2) : 0;
 }
 
 #endif
