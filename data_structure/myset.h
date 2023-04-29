@@ -5,6 +5,7 @@
 #include <iostream>
 
 // 平衡二分木
+// 0-indexed
 template<typename T>
 struct Myset {
 private:
@@ -115,8 +116,8 @@ public:
     // x以上がないならsize番目
     int lower_bound(T x) { return _lower_bound(this->tr,x); }
 
-    // x以上で最小が昇順何番目か 
-    // x以上がないならsize番目
+    // x超過で最小が昇順何番目か 
+    // x超過がないならsize番目
     int upper_bound(T x) { return _upper_bound(this->tr,x); }
 
     // 昇順k番目の削除
