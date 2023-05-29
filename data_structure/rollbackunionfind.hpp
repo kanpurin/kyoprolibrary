@@ -51,7 +51,7 @@ public:
     // O(1)
     void undo() {
         par[history.top().first] = history.top().second;
-        history.top();
+        history.pop();
         par[history.top().first] = history.top().second;
         history.pop();
     }
