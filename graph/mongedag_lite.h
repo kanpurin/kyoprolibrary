@@ -13,8 +13,9 @@ private:
 
     void check(int i,int j) {
         long long x = dist[j] + cost(j,i);
-        if (x < dist[i]) {
+        if (x < dist[i] || (x == dist[i] && d[j] + 1 < d[i])) {
             dist[i] = x;
+            d[i] = d[j] + 1;
             amin[i] = j;
         }
     }
@@ -29,10 +30,13 @@ private:
     }
 public:
     std::vector<long long> dist;
+    std::vector<int> d;
 
     LiteMongeDAG(int n, const std::function<long long(int,int)> &cost) : cost(cost) {
         dist.resize(n, 1e18);
         dist[0] = 0;
+        d.resize(n, n);
+        d[0] = 0;
         amin.resize(n, 0);
         check(n-1,0);
         solve(0,n-1);
