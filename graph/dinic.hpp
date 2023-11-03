@@ -66,6 +66,13 @@ public:
         graph[to].push_back({from, 0, (int)graph[from].size() - 1, true});
     }
 
+    // 頂点を追加
+    // indexを返す
+    int add_vertex() {
+        graph.push_back(std::vector< Edge >());
+        return graph.size()-1;
+    }
+
     long long max_flow(int s, int t, long long flow_limit = 1e18 + 6) {
         long long flow = 0;
         while (bfs(s, t)) {

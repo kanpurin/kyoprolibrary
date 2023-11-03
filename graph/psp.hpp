@@ -29,49 +29,99 @@ struct ProjectSelectionProblem {
         ans = 0;
     }
 
+    inline void add_cost(long long cost) {
+        ans += cost;
+    }
+
     // aの選択のコスト
-    void add_cost_1(int a,std::vector<long long> x) {
+    void add_cost_1(int a,std::vector<long long> c) {
         assert(0 <= a && a < n);
-        assert(k[a] == (int)x.size());
+        assert(k[a] == (int)c.size());
         for (int i = 0; i < k[a]; i++) {
-            cost[a][i] += x[i];
+            cost[a][i] += c[i];
         }
     }
 
     // x:abの選択間のコスト(Monge)
-    void add_cost_2(int a,int b,std::vector<std::vector<long long>> x) {
+    void add_cost_2(int a,int b,std::vector<std::vector<long long>> c) {
         assert(0 <= a && a < n && 0 <= b && b < n);
-        assert((int)x.size() == k[a]);
+        assert((int)c.size() == k[a]);
         for (int i = 0; i < k[a]; i++) {
-            assert((int)x[i].size() == k[b]);
-            cost[a][i] += x[i][0];
-            for (int j = k[b]-1; j >= 0; j--) x[i][j] -= x[i][0];
+            assert((int)c[i].size() == k[b]);
+            cost[a][i] += c[i][0];
+            for (int j = k[b]-1; j >= 0; j--) c[i][j] -= c[i][0];
         }
         for (int i = 1; i < k[b]; i++){
-            cost[b][i] += x[k[a]-1][i];
-            for (int j = 0; j < k[a]; j++) x[j][i] -= x[k[a]-1][i];
+            cost[b][i] += c[k[a]-1][i];
+            for (int j = 0; j < k[a]; j++) c[j][i] -= c[k[a]-1][i];
         }
         for (int i = 0; i < k[a]-1; i++){
             for (int j = 0; j < k[b]-1; j++){
-                long long c = x[i+1][j]+x[i][j+1]-x[i][j]-x[i+1][j+1];
-                assert(c >= 0);
-                if (c == 0) continue;
-                G.add_edge(s[b]+j, s[a]+i, c);
+                long long _c = c[i+1][j]+c[i][j+1]-c[i][j]-c[i+1][j+1];
+                assert(_c >= 0);
+                if (_c == 0) continue;
+                G.add_edge(s[b]+j, s[a]+i, _c);
             }
         }
+    }
+
+    // a1,a2,...,axの選択が(b1以上)∨(b2以上)∨...∨(bx以上)のとき
+    // いずれかのiについてaiの選択siがbi<=siのときc(>=0)のコスト
+    // 選択肢は0-indexed
+    void add_cost_x_geq(std::vector<int> a, std::vector<int> b, long long c) {
+        assert(a.size() == b.size());
+        assert(c >= 0);
+        if (c == 0) return;
+        int x = a.size();
+        for (int i = 0; i < x; i++) {
+            if (b[i] <= 0) {
+                add_cost(c);
+                return;
+            }
+        }
+        int sv = G.add_vertex();
+        for (int i = 0; i < x; i++) {
+            assert(0 <= a[i] && a[i] < n);
+            if (b[i] >= k[i]) continue;
+            G.add_edge(s[i]+b[i]-1,sv,c);
+        }
+        G.add_edge(sv,s[n]+1,c);
+    }
+
+    // a1,a2,...,axの選択が(b1以下)∨(b2以下)∨...∨(bx以下)のとき
+    // いずれかのiについてaiの選択siがsi<=biのときc(>=0)のコスト
+    // 選択肢は0-indexed
+    void add_cost_x_leq(std::vector<int> a, std::vector<int> b, long long c) {
+        assert(a.size() == b.size());
+        assert(c >= 0);
+        if (c == 0) return;
+        int x = a.size();
+        for (int i = 0; i < x; i++) {
+            if (b[i] >= k[i]-1) {
+                add_cost(c);
+                return;
+            }
+        }
+        int sv = G.add_vertex();
+        for (int i = 0; i < x; i++) {
+            assert(0 <= a[i] && a[i] < n);
+            if (b[i] < 0) continue;
+            G.add_edge(sv,s[i]+b[i],c);
+        }
+        G.add_edge(s[n],sv,c);
     }
 
     long long mincost() {
         for (int i = 0; i < n; i++){
             for (int j = 0; j < k[i]-2; j++) G.add_edge(s[i]+j+1, s[i]+j, INF);
-            ans += cost[i][k[i]-1];
+            add_cost(cost[i][k[i]-1]);
             for (int j = 0; j < k[i]-1; j++){
                 if (cost[i][j] > cost[i][j+1]) {
                     G.add_edge(s[n], s[i]+j, cost[i][j]-cost[i][j+1]);
                 }
                 else if (cost[i][j] < cost[i][j+1]) {
                     G.add_edge(s[i]+j, s[n]+1, cost[i][j+1]-cost[i][j]);
-                    ans -= cost[i][j+1]-cost[i][j];
+                    add_cost(-cost[i][j+1]+cost[i][j]);
                 }
             }
         }
@@ -81,17 +131,20 @@ struct ProjectSelectionProblem {
     // 先にmincostが必要
     // 選択した選択肢
     std::vector<int> answer() {
-        std::vector<int> ans(n);
+        std::vector<int> slct(n);
         auto v = G.min_cnt(s[n],s[n]+1);
         std::vector<bool> scut(s[n]+2);
-        for (int i = 0; i < (int)v.size(); i++) scut[v[i]] = true;
+        for (int i = 0; i < (int)v.size(); i++) {
+            if (v[i] > s[n]+1) continue;
+            scut[v[i]] = true;
+        }
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < k[i]-1; j++) {
-                if (!scut[s[i]+j]) { ans[i] = j; break; }
-                else if (j == k[i]-2) { ans[i] = k[i]-1; }
+                if (!scut[s[i]+j]) { slct[i] = j; break; }
+                else if (j == k[i]-2) { slct[i] = k[i]-1; }
             }
         }
-        return ans;
+        return slct;
     }
 };
 
