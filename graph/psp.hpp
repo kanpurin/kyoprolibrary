@@ -45,6 +45,7 @@ struct ProjectSelectionProblem {
     // x:abの選択間のコスト(Monge)
     void add_cost_2(int a,int b,std::vector<std::vector<long long>> c) {
         assert(0 <= a && a < n && 0 <= b && b < n);
+        assert(a != b);
         assert((int)c.size() == k[a]);
         for (int i = 0; i < k[a]; i++) {
             assert((int)c[i].size() == k[b]);
