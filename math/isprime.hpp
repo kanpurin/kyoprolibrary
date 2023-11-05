@@ -25,11 +25,12 @@ bool isprime(long long N) {
 
     for (long long a : A) {
         if (a % N == 0) return true;
-        long long j, r = modpow(a, d, N);
+        long long j;
+        __int128_t r = modpow(a, d, N);
         if (r == 1) continue;
         for (j = 0; j < s; j++) {
             if (r == N - 1) break;
-            r = __int128_t(r) * r % N;
+            r = r * r % N;
         }
         if (j == s) return false;
     }
