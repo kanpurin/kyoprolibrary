@@ -82,18 +82,26 @@ private:
         u64 im;
         Barrett() : m(), im() {}
         Barrett(int n) : m(n), im(u64(-1) / m + 1) {}
+        constexpr inline u64 mul(u64 a, u64 b) {
+            u32 a1 = a>>32, a2 = a;
+            u32 b1 = b>>32, b2 = b;
+            u64 res = (u64)a1*b1+((u64)a2*b1>>32)+((u64)a1*b2>>32);
+            if (a2*b1+a1*b2<a2*b1) res++;
+            if((((u64)(a2*b1)+a1*b2)<<32)+(u64)a2*b2<(u64)a2*b2) res++;
+            return res;
+        }
         constexpr inline i64 quo(u64 n) {
-            u64 x = u64((__uint128_t(n) * im) >> 64);
+            u64 x = mul(n,im);
             u32 r = n - x * m;
             return m <= r ? x - 1 : x;
         }
         constexpr inline i64 rem(u64 n) {
-            u64 x = u64((__uint128_t(n) * im) >> 64);
+            u64 x = mul(n,im);
             u32 r = n - x * m;
             return m <= r ? r + m : r;
         }
         constexpr inline std::pair<i64, int> quorem(u64 n) {
-            u64 x = u64((__uint128_t(n) * im) >> 64);
+            u64 x = mul(n,im);
             u32 r = n - x * m;
             if (m <= r) return {x - 1, r + m};
             return {x, r};
