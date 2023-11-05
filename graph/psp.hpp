@@ -234,7 +234,7 @@ public:
     // 選択した選択肢
     std::vector<int> answer() {
         std::vector<int> slct(n);
-        auto v = G.min_cnt(s[n],s[n]+1);
+        auto v = G.min_cut(s[n],s[n]+1);
         std::vector<bool> scut(s[n]+2);
         for (int i = 0; i < (int)v.size(); i++) {
             if (v[i] > s[n]+1) continue;

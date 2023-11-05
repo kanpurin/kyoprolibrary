@@ -84,7 +84,7 @@ public:
 
     // 先にmax_flowが必要
     // s側カットを出力
-    std::vector<int> min_cnt(int s,int t) {
+    std::vector<int> min_cut(int s,int t) {
         std::vector<bool> visited(graph.size());
         std::vector<int> ret;
         std::stack<int> sta;
