@@ -76,7 +76,6 @@ public:
     long long max_flow(int s, int t, long long flow_limit = 1e18 + 6) {
         long long flow = 0;
         while (bfs(s, t)) {
-            if (min_cost[t] == -1) break;
             iter.assign(graph.size(), 0);
             long long f = dfs(s, t, flow_limit-flow);
             if (!f) break;
