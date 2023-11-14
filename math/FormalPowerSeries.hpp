@@ -16,43 +16,110 @@ struct FormalPowerSeries {
 private:
     using FPS = FormalPowerSeries<MOD,any>;
 
-    void ntt(bool inverse) {
-        static bool first = true;
-        static mint<MOD> dw[30], idw[30];
-        if (first) {
-            first = false;
+    // maroonrk's ntt
+    void ntt(bool inv){
+        const int n = a.size();
+        mint<MOD>*const f = a.data();
+        static constexpr unsigned int mod=MOD;
+        static constexpr unsigned int mod2=mod*2;
+        static constexpr int L=30;
+        static mint<MOD> g[L],ig[L],p2[L];
+        if(g[0].x==0){
             mint<MOD> root = 2;
             while (root.pow((MOD - 1) / 2) == 1) root += 1;
-            for (int i = 0; i < 30; i++) dw[i] = -root.pow((MOD - 1) >> (i + 2)), idw[i] = mint<MOD>(1) / dw[i];
-        }
-        int n = this->size();
-        assert((n & (n - 1)) == 0);
-        if (not inverse) {
-            for (int m = n; m >>= 1;) {
-                mint<MOD> w = 1;
-                for (int s = 0, k = 0; s < n; s += 2 * m) {
-                    for (int i = s, j = s + m; i < s + m; i++, j++) {
-                        auto x = this->a[i], y = this->a[j]*w;
-                        if (x.x >= MOD) x.x -= MOD;
-                        this->a[i].x = x.x + y.x, this->a[j].x = x.x+(MOD-y.x);
-                    }
-                    w *= dw[__builtin_ctz(++k)];
-                }
-            }
-        } else {
-            for (int m = 1; m < n; m *= 2) {
-                mint<MOD> w = 1;
-                for (int s = 0, k = 0; s < n; s += 2 * m) {
-                    for (int i = s, j = s + m; i < s + m; i++, j++) {
-                        auto x = this->a[i], y = this->a[j];
-                        this->a[i] = x+y, this->a[j].x = x.x+(MOD-y.x), this->a[j] *= w;
-                    }
-                    w *= idw[__builtin_ctz(++k)];
-                }
+            for(int i = 0;i < L;i++){
+                mint<MOD> w=-root.pow(((mod-1)>>(i+2))*3);
+                g[i]=w;
+                ig[i]=w.inv();
+                p2[i]=mint<MOD>(1<<i).inv();
             }
         }
-        auto c = mint<MOD>(1) / mint<MOD>(inverse ? n : 1);
-        for (auto&& e : this->a) e *= c;
+        if(!inv){
+            int b=n;
+            if(b>>=1){//input:[0,mod)
+                for(int i = 0; i < b; i++){
+                    unsigned int x=f[i+b].x;
+                    f[i+b].x=f[i].x+mod-x;
+                    f[i].x+=x;
+                }
+            }
+            if(b>>=1){//input:[0,mod*2)
+                mint<MOD> p=1;
+                for(int i=0,k=0;i<n;i+=b*2){
+                    for(int j=i;j < i+b;j++){
+                        unsigned int x=(f[j+b]*p).x;
+                        f[j+b].x=f[j].x+mod-x;
+                        f[j].x+=x;
+                    }
+                    p*=g[__builtin_ctz(++k)];
+                }
+            }
+            while(b){
+                if(b>>=1){//input:[0,mod*3)
+                    mint<MOD> p=1;
+                    for(int i=0,k=0;i<n;i+=b*2){
+                        for(int j=i;j<i+b;j++){
+                            unsigned int x=(f[j+b]*p).x;
+                            f[j+b].x=f[j].x+mod-x;
+                            f[j].x+=x;
+                        }
+                        p*=g[__builtin_ctz(++k)];
+                    }
+                }
+                if(b>>=1){//input:[0,mod*4)
+                    mint<MOD> p=1;
+                    for(int i=0,k=0;i<n;i+=b*2){
+                        for(int j=i;j<i+b;j++){
+                            unsigned int x=(f[j+b]*p).x;
+                            f[j].x=(f[j].x<mod2?f[j].x:f[j].x-mod2);
+                            f[j+b].x=f[j].x+mod-x;
+                            f[j].x+=x;
+                        }
+                        p*=g[__builtin_ctz(++k)];
+                    }
+                }
+            }
+        }else{
+            int b=1;
+            if(b<n/2){//input:[0,mod)
+                mint<MOD> p=1;
+                for(int i=0,k=0;i<n;i+=b*2){
+                    for(int j=i;j<i+b;j++){
+                        unsigned long long x=f[j].x+mod-f[j+b].x;
+                        f[j].x+=f[j+b].x;
+                        f[j+b].x=x*p.x%mod;
+                    }
+                    p*=ig[__builtin_ctz(++k)];
+                }
+                b<<=1;
+            }
+            for(;b<n/2;b<<=1){
+                mint<MOD> p=1;
+                for(int i=0,k=0;i<n;i+=b*2){
+                    for(int j=i;j<i+b/2;j++){//input:[0,mod*2)
+                        unsigned long long x=f[j].x+mod2-f[j+b].x;
+                        f[j].x+=f[j+b].x;
+                        f[j].x=(f[j].x)<mod2?f[j].x:f[j].x-mod2;
+                        f[j+b].x=x*p.x%mod;
+                    }
+                    for(int j=i+b/2;j<i+b;j++){//input:[0,mod)
+                        unsigned long long x=f[j].x+mod-f[j+b].x;
+                        f[j].x+=f[j+b].x;
+                        f[j+b].x=x*p.x%mod;
+                    }
+                    p*=ig[__builtin_ctz(++k)];
+                }
+            }
+            if(b<n){//input:[0,mod*2)
+                for(int i=0;i<b;i++){
+                    unsigned int x=f[i+b].x;
+                    f[i+b].x=f[i].x+mod2-x;
+                    f[i].x+=x;
+                }
+            }
+            mint<mod> z=p2[std::__lg(n)];
+            for(int i=0;i<n;i++)f[i]*=z;
+        }
     }
     
     FPS convolution_naive(FPS &a, FPS &b) const {
@@ -534,7 +601,7 @@ public:
         assert(deg >= 0);
         int l = 0;
         while (this->a[l] == 0) ++l;
-        if (__int128_t(l)*k > deg) return *this = FPS(deg);
+        if (static_cast<__int128_t>(l)*k > deg) return *this = FPS(deg);
         mint<MOD> ic = this->a[l].inv();
         mint<MOD> pc = this->a[l].pow(k);
         this->a.erase(this->a.begin(), this->a.begin() + l);
@@ -558,7 +625,7 @@ public:
         }
         int l = 0;
         while (l < this->size() && this->a[l] == 0) ++l;
-        if (__int128_t(l)*k > this->size()) return FPS(this->size());
+        if (static_cast<__int128_t>(l)*k > this->size()) return FPS(this->size());
         FPS g(this->size()-l*k);
         std::vector<int> fl;
         mint<MOD> invf0 = this->a[l].inv();
