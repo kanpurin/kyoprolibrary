@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <cassert>
+#include <limits>
 #include "dinic.hpp"
 
 struct ProjectSelectionProblem {
@@ -180,8 +181,8 @@ public:
         int sv = G.add_vertex();
         for (int i = 0; i < x; i++) {
             assert(0 <= a[i] && a[i] < n);
-            if (b[i] >= k[i]) continue;
-            G.add_edge(s[i]+b[i]-1,sv,c);
+            if (b[i] >= k[a[i]]) continue;
+            G.add_edge(s[a[i]]+b[i]-1,sv,c);
         }
         G.add_edge(sv,s[n]+1,c);
     }
@@ -195,7 +196,7 @@ public:
         if (c == 0) return;
         int x = a.size();
         for (int i = 0; i < x; i++) {
-            if (b[i] >= k[i]-1) {
+            if (b[i] >= k[a[i]]-1) {
                 add_cost(c);
                 return;
             }
@@ -204,7 +205,7 @@ public:
         for (int i = 0; i < x; i++) {
             assert(0 <= a[i] && a[i] < n);
             if (b[i] < 0) continue;
-            G.add_edge(sv,s[i]+b[i],c);
+            G.add_edge(sv,s[a[i]]+b[i],c);
         }
         G.add_edge(s[n],sv,c);
     }
